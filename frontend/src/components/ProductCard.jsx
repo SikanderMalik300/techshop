@@ -7,8 +7,8 @@ const ProductCard = ({ product }) => {
 
   return (
     <Link to={`/product/${product._id}`}>
-      <div className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-600">
-        <img alt="" src={image} className="w-full h-50 object-cover" />
+      <div className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+        <img alt={name} src={image} className="w-full h-50 object-cover" />
         <div className="p-4">
           <h5
             className="font-bold mb-2 overflow-ellipsis"

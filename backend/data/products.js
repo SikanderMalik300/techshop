@@ -1,6 +1,5 @@
 const products = [
   {
-    _id: '1',
     name: 'iPhone 13 Pro Max',
     image: 'https://image.makewebeasy.net/makeweb/0/WMTnkKQmM/Apple_Product/iPhone_13_Pro_Max_Graphite_Grey.jpg',
     description:
@@ -13,7 +12,6 @@ const products = [
     numReviews: 20,
   },
   {
-    _id: '2',
     name: 'Samsung Galaxy S21 Ultra',
     image: 'https://cdn.meeliemobile.com/wp-content/uploads/Samsung-Galaxy-S21-Ultra-5G.png',
     description:
@@ -26,7 +24,6 @@ const products = [
     numReviews: 15,
   },
   {
-    _id: '3',
     name: 'OnePlus 9 Pro',
     image: 'https://phonesdata.com/files/models/OnePlus-9-Pro-216.jpg',
     description:
@@ -39,7 +36,6 @@ const products = [
     numReviews: 8,
   },
   {
-    _id: '4',
     name: 'Sony Xperia 1 II',
     image: 'https://gadgetsrealm.com/wp-content/uploads/2021/08/Sony-Xperia-10-III-Lite.jpg',
     description:
@@ -52,7 +48,6 @@ const products = [
     numReviews: 12,
   },
   {
-    _id: '5',
     name: 'Sony Xperia 1 III',
     image: 'https://images.frandroid.com/wp-content/uploads/2021/04/sony-xperia-1-iii-frandroid-2021.png',
     description:
@@ -60,10 +55,10 @@ const products = [
     brand: 'Sony',
     category: 'Phones & Mobile',
     price: 1299.99,
-    countInStock: 4,
+    countInStock: 0,
     rating: 4.6,
     numReviews: 10,
-  },
+  }
 ];
 
 export default products;
