@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
-import Logo from "../assets/logo.png";
+import Logo from "../assets/logo1.png";
 import { Link } from "react-router-dom";
 
 const Header = () => {
@@ -13,7 +13,7 @@ const Header = () => {
       <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
         <div className="flex items-center justify-between py-3 md:py-5 md:block">
           <Link to={`/`}>
-            <img src={Logo} width={120} height={50} alt="Float UI logo" />
+            <img src={Logo} width={160} height={80} alt="Float UI logo" />
           </Link>
           <div className="md:hidden">
             <button
