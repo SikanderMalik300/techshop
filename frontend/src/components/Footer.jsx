@@ -1,14 +1,21 @@
 import React from "react";
-import Logo from "../assets/logo.png";
+import Logo from "../assets/logo1.png";
 const Footer = () => {
   return (
     <footer className="text-gray-500 bg-white px-4 py-5 max-w-screen-xl mx-auto md:px-8">
       <div className="max-w-lg sm:mx-auto sm:text-center">
-        <img src={Logo} alt="Float UI Logo" className="w-32 sm:mx-auto" />
+        <img
+          src={Logo}
+          width={200}
+          height={100}
+          alt="Float UI Logo"
+          className="sm:mx-auto mb-4"
+        />
         <p className="leading-relaxed mt-2 text-[15px]">
-          Lorem Ipsum has been the industry's standard dummy text ever since the
-          1500s, when an unknown printer took a galley of type and scrambled it
-          to make a type specimen book.
+          Welcome to Tech Shop, where you can explore a wide range of
+          cutting-edge gadgets, electronics, and accessories. Whether you're
+          looking for the latest smartphones, laptops, or smart home devices,
+          we've got you covered with quality products at competitive prices.
         </p>
       </div>
       <div className="mt-8 items-center justify-between sm:flex">

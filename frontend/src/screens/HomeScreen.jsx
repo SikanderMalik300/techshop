@@ -1,30 +1,186 @@
-import React from "react";
-import ProductCard from "../components/ProductCard";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { FaSearch, FaFilter } from "react-icons/fa";
+import { useGetProductsQuery } from "../slices/productsApiSlice"; // Import the hook
+import ProductFilters from "../components/ProductFilters";
+import MobileFilters from "../components/MobileFilters";
+import ProductList from "../components/ProductList";
 
 const HomeScreen = () => {
-  const [products, setProducts] = useState([]);
+  const { data: products = [], error, isLoading } = useGetProductsQuery();
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [priceRange, setPriceRange] = useState([0, 2000]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(6);
+  const [showFilters, setShowFilters] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true); // To handle initial filter application
+  const [sortOrder, setSortOrder] = useState(""); // Track sorting order
+
   useEffect(() => {
-    const fetchProducts = async () => {
-      const { data } = await axios.get("/api/products");
-      setProducts(data);
+    if (products.length > 0) {
+      setFilteredProducts(products);
+
+      // Extract unique categories from products
+      const uniqueCategories = [
+        ...new Set(products.map((product) => product.category)),
+      ];
+      setCategories(uniqueCategories);
+    }
+  }, [products]);
+
+  useEffect(() => {
+    // Function to apply filters and sorting
+    const applyFilters = () => {
+      let tempProducts = [...products];
+
+      // Filter by search term
+      if (searchTerm) {
+        tempProducts = tempProducts.filter((product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
+      // Filter by price range
+      tempProducts = tempProducts.filter(
+        (product) =>
+          product.price >= priceRange[0] && product.price <= priceRange[1]
+      );
+
+      // Filter by selected categories
+      if (selectedCategories.length > 0) {
+        tempProducts = tempProducts.filter((product) =>
+          selectedCategories.includes(product.category)
+        );
+      }
+
+      // Sort by price
+      if (sortOrder === "lowToHigh") {
+        tempProducts.sort((a, b) => a.price - b.price);
+      } else if (sortOrder === "highToLow") {
+        tempProducts.sort((a, b) => b.price - a.price);
+      }
+
+      setFilteredProducts(tempProducts);
+      setCurrentPage(1); // Reset to first page after filtering
     };
-    fetchProducts();
-  }, []);
+
+    if (!initialLoad) {
+      applyFilters();
+    }
+    setInitialLoad(false); // Set initialLoad to false after first render
+  }, [
+    searchTerm,
+    priceRange,
+    selectedCategories,
+    products,
+    initialLoad,
+    sortOrder,
+  ]);
+
+  // Get current products
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Toggle filters and reset if hiding
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+    // Disable scrolling when filters are open
+    document.body.style.overflow = showFilters ? "auto" : "hidden";
+  };
+
+  // Scroll to top when navigating to new product page
+  useEffect(() => {
+    const handleScrollToTop = () => {
+      window.scrollTo(0, 0);
+    };
+    handleScrollToTop();
+  }, [currentProducts]);
+
+  const handleCategoryChange = (category) => {
+    if (selectedCategories.includes(category)) {
+      setSelectedCategories(selectedCategories.filter((c) => c !== category));
+    } else {
+      setSelectedCategories([...selectedCategories, category]);
+    }
+  };
+
+  const handleSortChange = (order) => {
+    setSortOrder(order);
+  };
 
   return (
-    <div className="bg-white border-b w-full md:static md:text-sm md:border-none">
-      <div className="px-4 max-w-screen-xl mx-auto md:px-8">
-        <h1 className="text-2xl md:text-3xl text-center mt-5 mb-4 pb-4">
-          Our Latest Products
-        </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {products.map((product) => (
-            <div key={product.id} className="w-full sm:w-auto">
-              <ProductCard product={product} />
+    <div className="bg-gray-100 min-h-screen py-10 w-full">
+      <div className="container mx-auto px-4 md:px-8 lg:px-8 w-full">
+        <div className="flex flex-col lg:flex-row justify-between mb-6 space-y-6 lg:space-y-0 lg:space-x-6">
+          {/* Filters Panel for Large Devices */}
+          <ProductFilters
+            categories={categories}
+            selectedCategories={selectedCategories}
+            handleCategoryChange={handleCategoryChange}
+            priceRange={priceRange}
+            setPriceRange={setPriceRange}
+            sortOrder={sortOrder}
+            handleSortChange={handleSortChange}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            toggleFilters={toggleFilters}
+          />
+
+          {/* Mobile Filters Button */}
+          <div className="lg:hidden flex items-center justify-between w-full mb-4">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search products..."
+                className="border p-2 rounded w-full pl-10 pr-4 focus:outline-none focus:ring-2 focus:border-indigo-600"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <FaSearch className="absolute top-3 left-3 text-gray-400" />
             </div>
-          ))}
+            <button
+              className="ml-4 bg-indigo-600 text-white p-2 rounded"
+              onClick={toggleFilters}
+            >
+              <FaFilter />
+            </button>
+          </div>
+
+          {/* Filters Panel for Mobile */}
+          {showFilters && (
+            <MobileFilters
+              categories={categories}
+              selectedCategories={selectedCategories}
+              handleCategoryChange={handleCategoryChange}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              sortOrder={sortOrder}
+              handleSortChange={handleSortChange}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              toggleFilters={toggleFilters}
+            />
+          )}
+
+          {/* Products List */}
+          <ProductList
+            products={filteredProducts}
+            isLoading={isLoading}
+            error={error}
+            currentProducts={currentProducts}
+            currentPage={currentPage}
+            productsPerPage={productsPerPage}
+            paginate={paginate}
+          />
         </div>
       </div>
     </div>
