@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import {  Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import HomeScreen from './screens/HomeScreen';
+import { Provider } from 'react-redux';
+import store from './store';
 import ProductScreen from './screens/ProductScreen';
 
 const router = createBrowserRouter(
@@ -18,9 +20,9 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router}>
-
-    </RouterProvider>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+      </Provider>
   </React.StrictMode>
 );
 

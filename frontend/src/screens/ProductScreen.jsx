@@ -1,30 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Ratings from "../components/Ratings";
-import axios from "axios";
+import { useGetProductDetailsQuery } from "../slices/productsApiSlice";
+import Spinner from "../components/Spinner"; // Import Spinner component
 
 const ProductScreen = () => {
-  const [product, setProduct] = useState({});
   const { id: productId } = useParams();
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const { data } = await axios.get(`/api/products/${productId}`);
-        setProduct(data);
-        // Scroll to the top of the product details section
-        document.getElementById("product-details").scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      }
-    };
-    fetchProduct();
-  }, [productId]);
+  const {
+    data: product,
+    isLoading,
+    error,
+  } = useGetProductDetailsQuery(productId);
 
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    // Scroll to the top of the page when component mounts
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleIncrement = () => {
     if (quantity < product.countInStock) {
@@ -43,6 +37,15 @@ const ProductScreen = () => {
     // For now, let's just log the selected quantity
     console.log("Added to cart:", quantity);
   };
+
+  if (isLoading) {
+    // Return the Spinner component while loading
+    return <Spinner />;
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
 
   return (
     <div className="bg-gray-100 pt-8 pb-20" id="product-details">
