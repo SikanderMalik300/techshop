@@ -1,12 +1,12 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 import Logo from "../assets/logo1.png";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Header = () => {
   const [state, setState] = useState(false);
-  const cartItemCount = 0; // Replace with the actual count from your cart
+  const { cartItems } = useSelector((state) => state.cart);
 
   return (
     <nav className="bg-white border-b w-full md:static md:text-sm md:border-none">
@@ -63,9 +63,11 @@ const Header = () => {
                 <Link to={`/cart`}>
                   <div className="block py-2 text-center text-gray-700 hover:text-indigo-600 border rounded-lg md:border-none">
                     <FaShoppingCart className="inline text-lg mr-1" />
-                    <span className="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
-                      {cartItemCount}
-                    </span>
+                    {cartItems.length > 0 && (
+                      <span className="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
+                        {cartItems.reduce((a, c) => a + c.qty, 0)}
+                      </span>
+                    )}
                   </div>
                 </Link>
               </li>
