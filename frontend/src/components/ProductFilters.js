@@ -1,4 +1,3 @@
-// ProductFilters.js
 import React from "react";
 import { Range, getTrackBackground } from "react-range";
 import { FaSearch } from "react-icons/fa";
@@ -63,28 +62,36 @@ const ProductFilters = ({
             min={MIN}
             max={MAX}
             onChange={(values) => setPriceRange(values)}
-            renderTrack={({ props, children }) => (
-              <div
-                {...props}
-                className="h-1 w-full rounded-md"
-                style={{
-                  background: getTrackBackground({
-                    values: priceRange,
-                    colors: ["#ccc", "#4F46E5", "#ccc"],
-                    min: MIN,
-                    max: MAX,
-                  }),
-                }}
-              >
-                {children}
-              </div>
-            )}
-            renderThumb={({ props }) => (
-              <div
-                {...props}
-                className="w-3 h-3 bg-indigo-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-              />
-            )}
+            renderTrack={({ props, children }) => {
+              const { key, ...restProps } = props; // Exclude key from props
+              return (
+                <div
+                  {...restProps}
+                  key={key} // Pass key separately
+                  className="h-1 w-full rounded-md"
+                  style={{
+                    background: getTrackBackground({
+                      values: priceRange,
+                      colors: ["#ccc", "#4F46E5", "#ccc"],
+                      min: MIN,
+                      max: MAX,
+                    }),
+                  }}
+                >
+                  {children}
+                </div>
+              );
+            }}
+            renderThumb={({ props }) => {
+              const { key, ...restProps } = props; // Exclude key from props
+              return (
+                <div
+                  {...restProps}
+                  key={key} // Pass key separately
+                  className="w-3 h-3 bg-indigo-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                />
+              );
+            }}
           />
           <div className="flex justify-between mt-2 text-gray-700">
             <span>${priceRange[0]}</span>

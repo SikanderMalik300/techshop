@@ -17,8 +17,10 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.5",
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.0",
     "react-range": "^1.8.14",
     "react-redux": "^9.1.2",

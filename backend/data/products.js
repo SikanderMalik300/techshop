@@ -45,7 +45,7 @@ const products = [
   },
   {
     name: 'Dell XPS 13',
-    image: 'http://www.techspot.com/images/products/2017/laptops/org/2017-01-27-product-4.jpg',
+    image: 'https://www.gizmochina.com/wp-content/uploads/2022/09/Dell-XPS-13-2-in-1.jpg',
     description: 'Dell XPS 13 with InfinityEdge display, 11th Gen Intel Core processors, and an ultra-sleek design.',
     brand: 'Dell',
     category: 'Laptops',

@@ -1,24 +1,33 @@
-import express from 'express'
-// or const express = require('express')
-import dotenv from 'dotenv'
-dotenv.config()
+import express from 'express';
+import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+import connectDB from './config/db.js'; // Adjust the path as necessary
+import productRoutes from './routes/productRoutes.js'; // Adjust the paths as necessary
+import userRoutes from './routes/userRoutes.js'; // Adjust the paths as necessary
+import { notFound, errorHandler } from './middleware/errorMiddleware.js'; // Adjust the paths as necessary
 
-import connectDB from './config/db.js';
-import productRoutes from './routes/productRoutes.js'
+dotenv.config();
+connectDB();
 
-connectDB()
-import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+const port = process.env.PORT || 5000;
+const app = express();
 
-const port = process.env.PORT;
-const app = express()
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
+// Routes
 app.get('/', (req, res) => {
-    res.send('API is running..')
-})
+    res.send('API is running..');
+});
 
-app.use('/api/products', productRoutes)
-app.use(notFound)
-app.use(errorHandler)
+app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
 
+// Error middleware
+app.use(notFound);
+app.use(errorHandler);
 
-app.listen(port,()=> console.log(`Server is running on Port ${port}`))
+// Start server
+app.listen(port, () => console.log(`Server is running on Port ${port}`));

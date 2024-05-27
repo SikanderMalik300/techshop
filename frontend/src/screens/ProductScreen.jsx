@@ -22,7 +22,18 @@ const ProductScreen = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    // Disable scrolling when showConfirmation is true
+    if (showConfirmation) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    // Cleanup function to restore scrolling on unmount or when changing page
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showConfirmation]);
 
   const handleIncrement = () => {
     if (qty < product.countInStock) {
@@ -43,11 +54,12 @@ const ProductScreen = () => {
 
   const handleKeepShopping = () => {
     setShowConfirmation(false);
-    navigate("/");
+    navigate("/"); // Navigate to homepage
   };
 
   const handleViewCart = () => {
-    navigate("/cart");
+    setShowConfirmation(false);
+    navigate("/cart"); // Navigate to cart page
   };
 
   if (isLoading) {
@@ -137,29 +149,32 @@ const ProductScreen = () => {
             </button>
           </div>
         </div>
+      </div>
 
-        {showConfirmation && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-6 rounded shadow-md text-center">
-              <h3 className="text-2xl font-bold mb-4">Product Added to Cart</h3>
-              <div className="flex justify-center space-x-4">
-                <button
-                  className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-                  onClick={handleKeepShopping}
-                >
-                  Keep Shopping
-                </button>
-                <button
-                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                  onClick={handleViewCart}
-                >
-                  View Cart
-                </button>
-              </div>
+      {showConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-md w-full mx-4 transform transition-transform duration-500 ease-in-out scale-105">
+            <h3 className="text-3xl font-bold mb-4">Product Added to Cart</h3>
+            <p className="text-base md:text-lg mb-4">
+              You can continue shopping or view your cart.
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                className="bg-indigo-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg hover:bg-indigo-700 text-sm md:text-base"
+                onClick={handleKeepShopping}
+              >
+                Keep Shopping
+              </button>
+              <button
+                className="bg-white text-black px-4 md:px-6 py-2 md:py-3 rounded-lg hover:text-indigo-700 hover:border-indigo-700 border border-black text-sm md:text-base"
+                onClick={handleViewCart}
+              >
+                View Cart
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

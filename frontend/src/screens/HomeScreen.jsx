@@ -15,7 +15,6 @@ const HomeScreen = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(6);
   const [showFilters, setShowFilters] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(true); // To handle initial filter application
   const [sortOrder, setSortOrder] = useState(""); // Track sorting order
 
   useEffect(() => {
@@ -66,18 +65,8 @@ const HomeScreen = () => {
       setCurrentPage(1); // Reset to first page after filtering
     };
 
-    if (!initialLoad) {
-      applyFilters();
-    }
-    setInitialLoad(false); // Set initialLoad to false after first render
-  }, [
-    searchTerm,
-    priceRange,
-    selectedCategories,
-    products,
-    initialLoad,
-    sortOrder,
-  ]);
+    applyFilters();
+  }, [searchTerm, priceRange, selectedCategories, sortOrder, products]);
 
   // Get current products
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -103,7 +92,7 @@ const HomeScreen = () => {
       window.scrollTo(0, 0);
     };
     handleScrollToTop();
-  }, [currentProducts]);
+  }, [currentPage]);
 
   const handleCategoryChange = (category) => {
     if (selectedCategories.includes(category)) {
@@ -119,7 +108,7 @@ const HomeScreen = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen py-10 w-full">
-      <div className="container mx-auto px-4 md:px-8 lg:px-8 w-full">
+      <div className="container mx-auto px-4 md:px-8 lg:px-8 w-full mt-8">
         <div className="flex flex-col lg:flex-row justify-between mb-6 space-y-6 lg:space-y-0 lg:space-x-6">
           {/* Filters Panel for Large Devices */}
           <ProductFilters

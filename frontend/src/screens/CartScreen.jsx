@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { removeFromCart, updateCartItemQty } from "../slices/cartSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 const CartScreen = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Use the useNavigate hook here
   const { cartItems, itemsPrice, shippingPrice, taxPrice, totalPrice } =
     useSelector((state) => state.cart);
 
@@ -26,6 +27,10 @@ const CartScreen = () => {
     }
   };
 
+  const checkoutHandler = () => {
+    navigate("/signin?redirect=/shipping");
+  };
+
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -35,12 +40,20 @@ const CartScreen = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Shopping Cart</h1>
       {cartItems.length === 0 ? (
-        <p className="text-lg">
-          Your cart is empty.{" "}
-          <Link to="/" className="text-indigo-600">
-            Go back
+        <div className="text-center">
+          <p className="text-lg">
+            Your cart is empty.{" "}
+            <Link to="/" className="text-indigo-600">
+              Go back
+            </Link>
+          </p>
+          <Link
+            to="/"
+            className="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+          >
+            Browse More Products
           </Link>
-        </p>
+        </div>
       ) : (
         <div className="flex flex-col md:flex-row md:space-x-4">
           <div className="md:w-2/3">
@@ -65,7 +78,7 @@ const CartScreen = () => {
                     <p className="text-sm text-gray-600">${item.price}</p>
                     <div className="flex items-center mt-2">
                       <button
-                        className="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                        className="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                         onClick={() => handleDecrement(item._id, item.qty)}
                         disabled={item.qty <= 1}
                       >
@@ -75,7 +88,7 @@ const CartScreen = () => {
                         {item.qty}
                       </span>
                       <button
-                        className="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                        className="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                         onClick={() =>
                           handleIncrement(item._id, item.qty, item.countInStock)
                         }
@@ -95,6 +108,12 @@ const CartScreen = () => {
                 </button>
               </div>
             ))}
+            <Link
+              to="/"
+              className="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-200"
+            >
+              Browse More Products
+            </Link>
           </div>
           <div className="md:w-1/3 bg-white shadow-md rounded-lg p-4">
             <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
@@ -115,8 +134,9 @@ const CartScreen = () => {
               <span>${totalPrice}</span>
             </div>
             <button
-              className="bg-indigo-600 text-white px-4 py-2 rounded mt-4 w-full hover:bg-indigo-700"
+              className="bg-indigo-600 text-white px-4 py-2 rounded mt-4 w-full hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
               disabled={cartItems.length === 0}
+              onClick={checkoutHandler}
             >
               Proceed to Checkout
             </button>
