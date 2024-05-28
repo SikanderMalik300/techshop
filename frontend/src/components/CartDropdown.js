@@ -28,7 +28,7 @@ const CartDropdown = ({ onClose }) => {
                   <Link to={`/product/${item._id}`} className="text-sm font-semibold text-indigo-600 hover:underline">
                     {item.name}
                   </Link>
-                  <p className="text-xs text-gray-600">${item.price} x {item.qty}</p>
+                  <p className="text-xs text-gray-600">${item.price} x {item.quantity}</p>
                 </div>
               </div>
               <button

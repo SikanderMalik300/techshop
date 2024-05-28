@@ -17,7 +17,7 @@ const ProductScreen = () => {
     error,
   } = useGetProductDetailsQuery(productId);
 
-  const [qty, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
@@ -36,19 +36,19 @@ const ProductScreen = () => {
   }, [showConfirmation]);
 
   const handleIncrement = () => {
-    if (qty < product.countInStock) {
+    if (quantity < product.countInStock) {
       setQuantity((prevQuantity) => prevQuantity + 1);
     }
   };
 
   const handleDecrement = () => {
-    if (qty > 1) {
+    if (quantity > 1) {
       setQuantity((prevQuantity) => prevQuantity - 1);
     }
   };
 
   const handleAddToCart = () => {
-    dispatch(addToCart({ ...product, qty }));
+    dispatch(addToCart({ ...product, quantity }));
     setShowConfirmation(true);
   };
 
@@ -106,15 +106,15 @@ const ProductScreen = () => {
               <button
                 className="px-3 py-2 bg-indigo-600 text-white rounded-md"
                 onClick={handleDecrement}
-                disabled={qty <= 1}
+                disabled={quantity <= 1}
               >
                 -
               </button>
-              <span className="text-lg font-semibold mx-2">{qty}</span>
+              <span className="text-lg font-semibold mx-2">{quantity}</span>
               <button
                 className="px-3 py-2 bg-indigo-600 text-white rounded-md"
                 onClick={handleIncrement}
-                disabled={qty >= product.countInStock}
+                disabled={quantity >= product.countInStock}
               >
                 +
               </button>

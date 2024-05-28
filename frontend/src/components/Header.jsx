@@ -109,7 +109,7 @@ const Header = () => {
                 <FaShoppingCart className="inline text-lg mr-1" />
                 {cartItems.length > 0 && (
                   <span className="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
-                    {cartItems.reduce((a, c) => a + c.qty, 0)}
+                    {cartItems.reduce((a, c) => a + c.quantity, 0)}
                   </span>
                 )}
               </button>

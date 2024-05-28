@@ -15,15 +15,15 @@ const CartScreen = () => {
     dispatch(removeFromCart(id));
   };
 
-  const handleIncrement = (id, qty, countInStock) => {
-    if (qty < countInStock) {
-      dispatch(updateCartItemQty({ id, qty: qty + 1 }));
+  const handleIncrement = (id, quantity, countInStock) => {
+    if (quantity < countInStock) {
+      dispatch(updateCartItemQty({ id, quantity: quantity + 1 }));
     }
   };
 
-  const handleDecrement = (id, qty) => {
-    if (qty > 1) {
-      dispatch(updateCartItemQty({ id, qty: qty - 1 }));
+  const handleDecrement = (id, quantity) => {
+    if (quantity > 1) {
+      dispatch(updateCartItemQty({ id, quantity: quantity - 1 }));
     }
   };
 
@@ -79,20 +79,24 @@ const CartScreen = () => {
                     <div className="flex items-center mt-2">
                       <button
                         className="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                        onClick={() => handleDecrement(item._id, item.qty)}
-                        disabled={item.qty <= 1}
+                        onClick={() => handleDecrement(item._id, item.quantity)}
+                        disabled={item.quantity <= 1}
                       >
                         -
                       </button>
                       <span className="text-lg font-semibold mx-2">
-                        {item.qty}
+                        {item.quantity}
                       </span>
                       <button
                         className="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                         onClick={() =>
-                          handleIncrement(item._id, item.qty, item.countInStock)
+                          handleIncrement(
+                            item._id,
+                            item.quantity,
+                            item.countInStock
+                          )
                         }
-                        disabled={item.qty >= item.countInStock}
+                        disabled={item.quantity >= item.countInStock}
                       >
                         +
                       </button>

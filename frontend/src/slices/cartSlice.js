@@ -3,11 +3,7 @@ import { updateCart } from '../utils/cartutils';
 
 // Initial state from localStorage or default
 const initialState = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {
-    cartItems: [],
-    itemsPrice: '0.00',
-    shippingPrice: '0.00',
-    taxPrice: '0.00',
-    totalPrice: '0.00'
+    cartItems: [], shippingAddress : {} , paymentMethod : 'PayPal' 
 };
 
 const cartSlice = createSlice({
@@ -27,7 +23,7 @@ const cartSlice = createSlice({
             // Ensure prices are numbers and update cart
             state.cartItems.forEach(cartItem => {
                 cartItem.price = Number(cartItem.price);
-                cartItem.qty = Number(cartItem.qty);
+                cartItem.quantity = Number(cartItem.quantity);
             });
 
             return updateCart(state);
@@ -37,17 +33,29 @@ const cartSlice = createSlice({
             return updateCart(state);
         },
         updateCartItemQty: (state, action) => {
-            const { id, qty } = action.payload;
+            const { id, quantity } = action.payload;
             const item = state.cartItems.find((x) => x._id === id);
 
             if (item) {
-                item.qty = qty;
+                item.quantity = quantity;
                 return updateCart(state);
             }
         },
+        saveShippingAddress: (state, action) => {
+            state.shippingAddress = action.payload;
+            return updateCart(state)
+        },
+        savePaymentMethod: (state, action) => {
+            state.paymentMethod = action.payload;
+            return updateCart(state)
+        },
+        clearCartItems: (state) => {
+            state.cartItems = [];
+            return updateCart(state);   
+        }
     },
 });
 
-export const { addToCart, removeFromCart, updateCartItemQty } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateCartItemQty, saveShippingAddress, savePaymentMethod, clearCartItems } = cartSlice.actions;
 
 export default cartSlice.reducer;
