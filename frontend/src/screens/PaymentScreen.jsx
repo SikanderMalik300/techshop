@@ -49,7 +49,6 @@ const PaymentScreen = () => {
                 required
               >
                 <option value="PayPal">PayPal</option>
-                <option value="CreditCard">Credit Card</option>
               </select>
             </div>
             <button

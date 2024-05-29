@@ -1,19 +1,92 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Spinner from "../components/Spinner";
-import { useGetOrderDetailsQuery } from "../slices/ordersApiSlice";
-import Message from "../components/Message"; // Import the Message component
+import {
+  useGetOrderDetailsQuery,
+  usePayOrderMutation,
+  useGetPayPalClientIdQuery,
+} from "../slices/ordersApiSlice";
+import Message from "../components/Message";
 import ReactToPrint from "react-to-print";
+import { toast } from "react-toastify";
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 
 const MyOrderScreen = () => {
   const { id: orderId } = useParams();
-  const { data: order, isLoading, error } = useGetOrderDetailsQuery(orderId);
+  const {
+    data: order,
+    isLoading,
+    error,
+    refetch,
+  } = useGetOrderDetailsQuery(orderId);
   const componentRef = useRef();
+  const [printMode, setPrintMode] = useState(false);
+
+  const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
+
+  const {
+    data: paypal,
+    isLoading: loadingPayPal,
+    error: errorPayPal,
+  } = useGetPayPalClientIdQuery();
+
+  useEffect(() => {
+    if (!errorPayPal && !loadingPayPal && paypal && paypal.clientId) {
+      const loadPayPalScript = async () => {
+        paypalDispatch({
+          type: "resetOptions",
+          value: {
+            "client-id": paypal.clientId,
+            currency: "USD",
+          },
+        });
+        paypalDispatch({ type: "setLoadingStatus", value: "pending" });
+      };
+      if (order && !order.isPaid) {
+        if (!window.paypal) {
+          loadPayPalScript();
+        }
+      }
+    }
+  }, [order, paypal, paypalDispatch, loadingPayPal, errorPayPal]);
+
+  function onApprove(data, actions) {
+    return actions.order.capture().then(async function (details) {
+      try {
+        await payOrder({ orderId, details });
+        refetch();
+        toast.success("Payment Successful");
+      } catch (error) {
+        toast.error(error?.data?.message || error.message);
+      }
+    });
+  }
+
+  function onError(err) {
+    toast.error(err.message);
+  }
+
+  function createOrder(data, actions) {
+    return actions.order
+      .create({
+        purchase_units: [
+          {
+            amount: {
+              value: order.totalPrice,
+            },
+          },
+        ],
+      })
+      .then((orderId) => {
+        return orderId;
+      });
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen py-10">
       <div className="container mx-auto px-4 md:px-8 lg:px-8">
-        <div className="bg-white shadow-md rounded-lg p-4 md:p-8 mx-auto max-w-2xl">
+        <div className="bg-white shadow-md rounded-lg p-4 md:p-8 mx-auto max-w-4xl">
           <h2 className="text-3xl font-bold mb-4 text-gray-800">
             Order Details
           </h2>
@@ -34,22 +107,41 @@ const MyOrderScreen = () => {
                     </div>
                     <div className="mb-4">
                       <h3 className="text-xl font-semibold mb-2">
+                        Payment Method
+                      </h3>
+                      <p className="text-gray-600 mb-4">
+                        {order.paymentMethod}
+                      </p>
+                      {order.isPaid ? (
+                        <Message variant="success">
+                          Paid at: {new Date(order.paidAt).toLocaleString()}
+                        </Message>
+                      ) : (
+                        <Message variant="danger">Not Paid Yet</Message>
+                      )}
+                    </div>
+                    <div className="mb-4">
+                      <h3 className="text-xl font-semibold mb-2">
                         Shipping Address
                       </h3>
                       <p className="text-gray-600">
                         {order.shippingAddress.address}
                       </p>
                       <p className="text-gray-600">{`${order.shippingAddress.city}, ${order.shippingAddress.postalCode}`}</p>
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 mb-4">
                         {order.shippingAddress.country}
                       </p>
+                      {order.isDelivered ? (
+                        <Message variant="success">
+                          Delivered at:{" "}
+                          {new Date(order.deliveredAt).toLocaleString()}
+                        </Message>
+                      ) : (
+                        <Message variant="danger">Not Delivered Yet</Message>
+                      )}
                     </div>
-                    <div className="mb-4">
-                      <h3 className="text-xl font-semibold mb-2">
-                        Payment Method
-                      </h3>
-                      <p className="text-gray-600">{order.paymentMethod}</p>
-                    </div>
+                  </div>
+                  <div>
                     <div className="mb-4">
                       <h3 className="text-xl font-semibold mb-2">
                         Order Items
@@ -84,6 +176,8 @@ const MyOrderScreen = () => {
                       ))}
                     </div>
                   </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
                     <div className="mb-4">
                       <h3 className="text-xl font-semibold mb-2">
@@ -106,32 +200,29 @@ const MyOrderScreen = () => {
                         <span>${order.totalPrice.toFixed(2)}</span>
                       </div>
                     </div>
-                    <div className="mb-4">
-                      <h3 className="text-xl font-semibold mb-2">
-                        Payment Status
-                      </h3>
-                      {order.isPaid ? (
-                        <Message variant="success">
-                          Paid at: {new Date(order.paidAt).toLocaleString()}
-                        </Message>
-                      ) : (
-                        <Message variant="danger">Not Paid Yet</Message>
-                      )}
-                    </div>
-                    <div className="mb-4">
-                      <h3 className="text-xl font-semibold mb-2">
-                        Delivery Status
-                      </h3>
-                      {order.isDelivered ? (
-                        <Message variant="success">
-                          Delivered at:{" "}
-                          {new Date(order.deliveredAt).toLocaleString()}
-                        </Message>
-                      ) : (
-                        <Message variant="danger">Not Delivered Yet</Message>
-                      )}
-                    </div>
                   </div>
+                  {!printMode && (
+                    <div>
+                      {!order.isPaid && (
+                        <div>
+                          {loadingPay && <Spinner />}
+                          {isPending ? (
+                            <Spinner />
+                          ) : (
+                            <div>
+                              <div>
+                                <PayPalButtons
+                                  createOrder={createOrder}
+                                  onApprove={onApprove}
+                                  onError={onError}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -140,11 +231,18 @@ const MyOrderScreen = () => {
         <div className="mt-4 text-center">
           <ReactToPrint
             trigger={() => (
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={() => setPrintMode(true)}
+              >
                 Print Order Details
               </button>
             )}
-            content={() => componentRef.current}
+            content={() => {
+              setPrintMode(true);
+              return componentRef.current;
+            }}
+            onAfterPrint={() => setPrintMode(false)}
           />
         </div>
       </div>
