@@ -76,7 +76,7 @@ const MobileFilters = ({
             renderThumb={({ props }) => (
               <div
                 {...props}
-                className="w-3 h-3 bg-indigo-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                className="w-3 h-3 bg-indigo-600 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
               />
             )}
           />

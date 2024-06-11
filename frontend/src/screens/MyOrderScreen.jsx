@@ -87,9 +87,35 @@ const MyOrderScreen = () => {
     <div className="bg-gray-100 min-h-screen py-10">
       <div className="container mx-auto px-4 md:px-8 lg:px-8">
         <div className="bg-white shadow-md rounded-lg p-4 md:p-8 mx-auto max-w-4xl">
-          <h2 className="text-3xl font-bold mb-4 text-gray-800">
-            Order Details
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-3xl font-bold text-gray-800">Order Details</h2>
+            <ReactToPrint
+              trigger={() => (
+                <button
+                  className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded hidden md:inline-block"
+                  onClick={() => setPrintMode(true)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 inline-block mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-4 4h4M4 21h16a2 2 0 002-2V5a2 2 0 00-2-2H4a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Print Order Details
+                </button>
+              )}
+              content={() => componentRef.current}
+              onAfterPrint={() => setPrintMode(false)}
+            />
+          </div>
           {isLoading ? (
             <Spinner />
           ) : error ? (
@@ -227,23 +253,6 @@ const MyOrderScreen = () => {
               </div>
             </div>
           )}
-        </div>
-        <div className="mt-4 text-center">
-          <ReactToPrint
-            trigger={() => (
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => setPrintMode(true)}
-              >
-                Print Order Details
-              </button>
-            )}
-            content={() => {
-              setPrintMode(true);
-              return componentRef.current;
-            }}
-            onAfterPrint={() => setPrintMode(false)}
-          />
         </div>
       </div>
     </div>

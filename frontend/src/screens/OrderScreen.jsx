@@ -106,7 +106,7 @@ const OrderScreen = () => {
               <button
                 type="button"
                 onClick={placeOrderHandler}
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-700"
                 disabled={isLoading}
               >
                 {isLoading ? "Placing Order..." : "Place Order"}

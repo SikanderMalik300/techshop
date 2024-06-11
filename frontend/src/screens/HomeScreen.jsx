@@ -4,6 +4,7 @@ import { useGetProductsQuery } from "../slices/productsApiSlice"; // Import the 
 import ProductFilters from "../components/ProductFilters";
 import MobileFilters from "../components/MobileFilters";
 import ProductList from "../components/ProductList";
+import Spinner from "../components/Spinner";
 
 const HomeScreen = () => {
   const { data: products = [], error, isLoading } = useGetProductsQuery();
@@ -161,15 +162,18 @@ const HomeScreen = () => {
           )}
 
           {/* Products List */}
-          <ProductList
-            products={filteredProducts}
-            isLoading={isLoading}
-            error={error}
-            currentProducts={currentProducts}
-            currentPage={currentPage}
-            productsPerPage={productsPerPage}
-            paginate={paginate}
-          />
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <ProductList
+              products={filteredProducts}
+              error={error}
+              currentProducts={currentProducts}
+              currentPage={currentPage}
+              productsPerPage={productsPerPage}
+              paginate={paginate}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -37,6 +37,18 @@ const Header = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      // Close dropdown when clicking outside
+      if (!e.target.closest(".dropdown-wrapper")) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, []);
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
     setCartOpen(false);
@@ -77,7 +89,7 @@ const Header = () => {
   };
 
   return (
-    <nav className="bg-white border-b w-full md:static md:text-sm md:border-none">
+    <nav className="bg-white border-b w-full md:static md:text-sm md:border-none sticky top-0 z-50">
       <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
         <div className="flex items-center justify-between py-3 md:py-5 md:block">
           <Link to={`/`}>
@@ -121,7 +133,7 @@ const Header = () => {
               {userInfo ? (
                 <div className="relative">
                   <div
-                    className="flex items-center cursor-pointer"
+                    className="flex items-center cursor-pointer dropdown-wrapper"
                     onClick={toggleDropdown}
                   >
                     <span className="font-medium text-gray-700">
@@ -134,11 +146,14 @@ const Header = () => {
                     )}
                   </div>
                   {isDropdownOpen && (
-                    <ul className="absolute mt-2 w-36 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 mr-8">
+                    <ul className="absolute mt-2 w-36 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 mr-8 z-50">
                       <li>
                         <button
                           className="block py-2 px-4 text-gray-800 hover:bg-gray-200 w-full text-left"
-                          onClick={() => navigate("/profile")}
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            navigate("/profile");
+                          }}
                         >
                           View Profile
                         </button>
@@ -146,7 +161,21 @@ const Header = () => {
                       <li>
                         <button
                           className="block py-2 px-4 text-gray-800 hover:bg-gray-200 w-full text-left"
-                          onClick={handleLogout}
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            navigate("/myordersdata");
+                          }}
+                        >
+                          My Orders
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="block py-2 px-4 text-gray-800 hover:bg-gray-200 w-full text-left"
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            handleLogout();
+                          }}
                         >
                           Logout
                         </button>
