@@ -10,7 +10,8 @@ import { logout } from "../slices/authSlice";
 const Header = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isCartOpen, setCartOpen] = useState(false);
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [isAdminDropdownOpen, setAdminDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -31,17 +32,17 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Close dropdown when location changes to '/'
-    if (location.pathname === "/") {
-      setDropdownOpen(false);
-    }
+    // Close dropdowns when location changes
+    setUserDropdownOpen(false);
+    setAdminDropdownOpen(false);
   }, [location]);
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
-      // Close dropdown when clicking outside
+      // Close dropdowns when clicking outside
       if (!e.target.closest(".dropdown-wrapper")) {
-        setDropdownOpen(false);
+        setUserDropdownOpen(false);
+        setAdminDropdownOpen(false);
       }
     };
 
@@ -52,12 +53,14 @@ const Header = () => {
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
     setCartOpen(false);
-    setDropdownOpen(false); // Close dropdown when opening mobile menu
+    setUserDropdownOpen(false); // Close dropdown when opening mobile menu
+    setAdminDropdownOpen(false);
   };
 
   const toggleCart = () => {
     setCartOpen(!isCartOpen);
-    setDropdownOpen(false); // Close dropdown when opening cart
+    setUserDropdownOpen(false); // Close dropdown when opening cart
+    setAdminDropdownOpen(false);
   };
 
   const openCart = () => {
@@ -74,8 +77,14 @@ const Header = () => {
     setMobileMenuOpen(false);
   };
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!isDropdownOpen);
+  const toggleUserDropdown = () => {
+    setUserDropdownOpen(!isUserDropdownOpen);
+    setAdminDropdownOpen(false);
+  };
+
+  const toggleAdminDropdown = () => {
+    setAdminDropdownOpen(!isAdminDropdownOpen);
+    setUserDropdownOpen(false);
   };
 
   const handleLogout = async () => {
@@ -129,29 +138,29 @@ const Header = () => {
                 <CartDropdown onClose={() => setCartOpen(false)} />
               )}
             </li>
-            <li>
-              {userInfo ? (
+            {userInfo ? (
+              <li className="relative flex items-center space-x-4">
                 <div className="relative">
                   <div
                     className="flex items-center cursor-pointer dropdown-wrapper"
-                    onClick={toggleDropdown}
+                    onClick={toggleUserDropdown}
                   >
                     <span className="font-medium text-gray-700">
                       {userInfo.name}
                     </span>
-                    {isDropdownOpen ? (
+                    {isUserDropdownOpen ? (
                       <FaAngleUp className="inline text-lg ml-1" />
                     ) : (
                       <FaAngleDown className="inline text-lg ml-1" />
                     )}
                   </div>
-                  {isDropdownOpen && (
+                  {isUserDropdownOpen && (
                     <ul className="absolute mt-2 w-36 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 mr-8 z-50">
                       <li>
                         <button
                           className="block py-2 px-4 text-gray-800 hover:bg-gray-200 w-full text-left"
                           onClick={() => {
-                            setDropdownOpen(false);
+                            setUserDropdownOpen(false);
                             navigate("/profile");
                           }}
                         >
@@ -162,7 +171,7 @@ const Header = () => {
                         <button
                           className="block py-2 px-4 text-gray-800 hover:bg-gray-200 w-full text-left"
                           onClick={() => {
-                            setDropdownOpen(false);
+                            setUserDropdownOpen(false);
                             navigate("/myordersdata");
                           }}
                         >
@@ -173,26 +182,79 @@ const Header = () => {
                         <button
                           className="block py-2 px-4 text-gray-800 hover:bg-gray-200 w-full text-left"
                           onClick={() => {
-                            setDropdownOpen(false);
+                            setUserDropdownOpen(false);
                             handleLogout();
                           }}
                         >
                           Logout
                         </button>
                       </li>
-                      {/* Add more dropdown items as needed */}
                     </ul>
                   )}
                 </div>
-              ) : (
+                {userInfo.isAdmin && (
+                  <div className="relative">
+                    <div
+                      className="flex items-center cursor-pointer dropdown-wrapper"
+                      onClick={toggleAdminDropdown}
+                    >
+                      <span className="font-medium text-gray-700">Manage</span>
+                      {isAdminDropdownOpen ? (
+                        <FaAngleUp className="inline text-lg ml-1" />
+                      ) : (
+                        <FaAngleDown className="inline text-lg ml-1" />
+                      )}
+                    </div>
+                    {isAdminDropdownOpen && (
+                      <ul className="absolute mt-2 w-36 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 mr-8 z-50">
+                        <li>
+                          <button
+                            className="block py-2 px-4 text-gray-800 hover:bg-gray-200 w-full text-left"
+                            onClick={() => {
+                              setAdminDropdownOpen(false);
+                              navigate("/admin/productlist");
+                            }}
+                          >
+                            Products
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="block py-2 px-4 text-gray-800 hover:bg-gray-200 w-full text-left"
+                            onClick={() => {
+                              setAdminDropdownOpen(false);
+                              navigate("/admin/orderlist");
+                            }}
+                          >
+                            Orders
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="block py-2 px-4 text-gray-800 hover:bg-gray-200 w-full text-left"
+                            onClick={() => {
+                              setAdminDropdownOpen(false);
+                              navigate("/admin/userlist");
+                            }}
+                          >
+                            Users
+                          </button>
+                        </li>
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </li>
+            ) : (
+              <li>
                 <div
                   className="block py-2 px-3 font-medium text-center cursor-pointer text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none rounded-lg shadow md:inline"
                   onClick={openSignIn}
                 >
                   Sign in
                 </div>
-              )}
-            </li>
+              </li>
+            )}
           </ul>
         </div>
       </div>
